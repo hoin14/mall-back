@@ -8,5 +8,11 @@ JPA
 Query DSL
 JWT
 
+API서버 
+REST Controller
+REST ConrollerAdvice
+QueryDSL
+CORS 설정
+
 React
 
