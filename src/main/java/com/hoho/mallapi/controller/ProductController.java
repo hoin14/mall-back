@@ -1,6 +1,9 @@
 package com.hoho.mallapi.controller;
 
+import com.hoho.mallapi.dto.PageRequestDTO;
+import com.hoho.mallapi.dto.PageResponseDTO;
 import com.hoho.mallapi.dto.ProductDTO;
+import com.hoho.mallapi.service.ProductService;
 import com.hoho.mallapi.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +22,9 @@ import java.util.Map;
 public class ProductController {
 
     private final CustomFileUtil fileUtil;
+    private final ProductService productService;
 
+    /*
     @PostMapping("/")
     public Map<String, String> register(ProductDTO productDto){
         log.info("register: " + productDto);
@@ -28,16 +33,39 @@ public class ProductController {
 
         List<String> uploadedFileNames = fileUtil.saveFiles(files);
 
-        productDto.setUploadedFileName(uploadedFileNames);
+        productDto.setUploadFileName(uploadedFileNames);
 
         log.info(uploadedFileNames);
 
         return Map.of("RESULT", "SUCCESS");
     }
+    */
 
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGet(@PathVariable("fileName") String fileName){
         return fileUtil.getFile(fileName);
     }
 
+    @GetMapping("/list")
+    public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO){
+        return productService.getList(pageRequestDTO);
+    }
+
+    @PostMapping("/")
+    public Map<String, Long> register(ProductDTO productDTO){
+        List<MultipartFile> files = productDTO.getFiles();
+        List<String> uploadFileNames = fileUtil.saveFiles(files);
+
+        productDTO.setUploadFileName(uploadFileNames);
+        log.info(uploadFileNames);
+
+        Long pno = productService.register(productDTO);
+
+        return Map.of("result", pno);
+    }
+
+    @GetMapping("/{pno}")
+    public ProductDTO read(@PathVariable("pno") Long pno){
+        return productService.get(pno);
+    }
 }

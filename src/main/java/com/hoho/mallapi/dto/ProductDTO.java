@@ -16,7 +16,7 @@ import java.util.List;
 public class ProductDTO {
 
     private Long pno;
-    private String name;
+    private String pname;
     private int price;
     private String pdesc;
     private boolean delFlag;
@@ -25,6 +25,6 @@ public class ProductDTO {
     private List<MultipartFile> files = new ArrayList<>();
 
     @Builder.Default
-    private List<String> uploadedFileName = new ArrayList<>();
+    private List<String> uploadFileName = new ArrayList<>();
 
 }
