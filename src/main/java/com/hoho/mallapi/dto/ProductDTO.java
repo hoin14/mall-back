@@ -25,6 +25,6 @@ public class ProductDTO {
     private List<MultipartFile> files = new ArrayList<>();
 
     @Builder.Default
-    private List<String> uploadFileName = new ArrayList<>();
+    private List<String> uploadFileNames = new ArrayList<>();
 
 }

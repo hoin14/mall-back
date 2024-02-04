@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @Log4j2
@@ -56,7 +57,7 @@ public class ProductController {
         List<MultipartFile> files = productDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFiles(files);
 
-        productDTO.setUploadFileName(uploadFileNames);
+        productDTO.setUploadFileNames(uploadFileNames);
         log.info(uploadFileNames);
 
         Long pno = productService.register(productDTO);
@@ -68,4 +69,47 @@ public class ProductController {
     public ProductDTO read(@PathVariable("pno") Long pno){
         return productService.get(pno);
     }
+
+    @PutMapping("/{pno}")
+    public Map<String, String> modify(@PathVariable Long pno, ProductDTO productDTO){
+        //기존 상품 정보
+        productDTO.setPno(pno);
+        ProductDTO oldProductDTO = productService.get(pno);
+
+        //file upload
+        List<MultipartFile> files = productDTO.getFiles();
+        List<String> currentUploadFileNames = fileUtil.saveFiles(files);
+
+        List<String> uploadedFileNames = productDTO.getUploadFileNames();
+
+        if(currentUploadFileNames != null && !currentUploadFileNames.isEmpty()){
+            uploadedFileNames.addAll(currentUploadFileNames);
+        }
+
+        productService.modify(productDTO);
+
+        //기존 업로드 파일 제거
+        List<String> oldFileNames = oldProductDTO.getUploadFileNames();
+        if(oldFileNames != null && !oldFileNames.isEmpty()){
+            List<String> removeFiles =
+            oldFileNames.stream().filter(fileName -> !uploadedFileNames.contains(fileName))
+                    .toList();
+
+            fileUtil.deleteFiles(removeFiles);
+        }
+
+        return Map.of("RESULT", "SUCCESS");
+    }
+
+    @DeleteMapping("/{pno}")
+    public Map<String, String> remove(@PathVariable Long pno){
+        List<String> oldFileNames = productService.get(pno).getUploadFileNames();
+
+        productService.remove(pno);
+
+        fileUtil.deleteFiles(oldFileNames);
+
+        return Map.of("RESULT", "SUCCESS");
+    }
+
 }

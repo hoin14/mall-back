@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -47,7 +46,7 @@ public class ProductServiceImpl implements ProductService{
                     .build();
 
             String imageStr = productImage.getFileName();
-            productDto.setUploadFileName(List.of(imageStr));
+            productDto.setUploadFileNames(List.of(imageStr));
 
             return productDto;
 
@@ -81,15 +80,13 @@ public class ProductServiceImpl implements ProductService{
                 .price(productDTO.getPrice())
                 .build();
 
-        List<String> uploadFileNames = productDTO.getUploadFileName();
+        List<String> uploadFileNames = productDTO.getUploadFileNames();
 
         if(uploadFileNames == null || uploadFileNames.isEmpty()){
             return product;
         }
 
-        uploadFileNames.forEach(fileName -> {
-            product.addImageString(fileName);
-        });
+        uploadFileNames.forEach(product::addImageString);
 
         return product;
     }
@@ -99,6 +96,35 @@ public class ProductServiceImpl implements ProductService{
         Product product = result.orElseThrow();
 
         return entityToDTO(product);
+    }
+
+    @Override
+    public void modify(ProductDTO productDTO) {
+        //조회
+        Optional<Product> result = productRepository.findById(productDTO.getPno());
+
+        Product product = result.orElseThrow();
+
+        //변경 내용 저장
+        product.changePrice(productDTO.getPrice());
+        product.changeName(productDTO.getPname());
+        product.changeDesc(productDTO.getPdesc());
+        product.changeDel(productDTO.isDelFlag());
+
+        List<String> uploadFileNames = productDTO.getUploadFileNames();
+        product.clearList();
+
+        if(uploadFileNames != null && !uploadFileNames.isEmpty()){
+            uploadFileNames.forEach(product::addImageString);
+        }
+
+        //저장
+        productRepository.save(product);
+    }
+
+    @Override
+    public void remove(Long pno) {
+        productRepository.deleteById(pno);
     }
 
     private ProductDTO entityToDTO(Product product){
@@ -118,7 +144,7 @@ public class ProductServiceImpl implements ProductService{
         List<String> fileNameList = imageList.stream().map(
                 ProductImage::getFileName).toList();
 
-        productDTO.setUploadFileName(fileNameList);
+        productDTO.setUploadFileNames(fileNameList);
 
         return productDTO;
     }
