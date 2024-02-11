@@ -3,6 +3,7 @@ package com.hoho.mallapi.config;
 import com.hoho.mallapi.security.filter.JWTCheckFilter;
 import com.hoho.mallapi.security.handler.APILoginFailHandler;
 import com.hoho.mallapi.security.handler.APILoginSuccessHandler;
+import com.hoho.mallapi.security.handler.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,10 @@ public class CustomSecurityConfig {
         });;
 
         http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(config -> {
+            config.accessDeniedHandler(new CustomAccessDeniedHandler());
+        });
 
         return http.build();
     }
