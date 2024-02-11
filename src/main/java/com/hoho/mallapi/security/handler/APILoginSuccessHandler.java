@@ -2,6 +2,7 @@ package com.hoho.mallapi.security.handler;
 
 import com.google.gson.Gson;
 import com.hoho.mallapi.dto.MemberDTO;
+import com.hoho.mallapi.util.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,8 +28,11 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
 
         Map<String, Object> claims = memberDTO.getClaims();
 
-        claims.put("accessToken", "");
-        claims.put("refreshToken", "");
+        String accessToken = JWTUtil.generateToken(claims, 10);
+        String refreshToken = JWTUtil.generateToken(claims, 60*26);
+
+        claims.put("accessToken", accessToken);
+        claims.put("refreshToken", refreshToken);
 
         Gson gson = new Gson();
 
