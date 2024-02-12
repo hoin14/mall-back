@@ -26,10 +26,15 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
         log.info("check url--------" + path);
 
-        if(path.startsWith("/api/member/")){
+        if(path.startsWith("/api/member/*")){
             log.info("true:" + path);
             return true;
         }
+        if(path.startsWith("/api/member/kakao")){
+            log.info("true:" + path);
+            return true;
+        }
+
         if(path.startsWith("/api/member/refresh")){
             log.info("true:" + path);
             return true;
@@ -50,6 +55,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         log.info("-----------------------");
 
         String authHeaderStr = request.getHeader("Authorization");
+        log.info("authHeaderStr" + authHeaderStr);
 
         try{
             //Bearer 7 + token

@@ -31,10 +31,12 @@ public class APIRefreshController {
         }
 
         String accessToken = authHeader.substring(7);
+        log.info("accessToken:" + accessToken);
 
         //AccessToken 만료여부 확인
         if(!checkExpiredToken(accessToken)){
-            return Map.of("AccessToken", accessToken, "refreshToken", refreshToken);
+            log.info("accessToken 만료");
+            return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
         }
 
         //RefreshToken 검증
@@ -46,7 +48,7 @@ public class APIRefreshController {
 
         String newRefreshToken = checkTime((Integer) claims.get("exp")) == true ? JWTUtil.generateToken(claims, 60*24) : refreshToken;
 
-        return Map.of("AccessToken", accessToken, "refreshToken", refreshToken);
+        return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
     }
 
     private boolean checkTime(Integer exp){
