@@ -3,6 +3,7 @@ package com.hoho.mallapi.service;
 import com.hoho.mallapi.domain.Member;
 import com.hoho.mallapi.domain.MemberRole;
 import com.hoho.mallapi.dto.MemberDTO;
+import com.hoho.mallapi.dto.MemberModifyDTO;
 import com.hoho.mallapi.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -49,6 +50,19 @@ public class MemberServiceImpl implements MemberService{
 
         MemberDTO memberDTO = entityDTO(socialMember);
         return memberDTO;
+    }
+
+    @Override
+    public void modifyMember(MemberModifyDTO memberModifyDTO) {
+        Optional<Member> result = memberRepository.findById(memberModifyDTO.getEmail());
+
+        Member member = result.orElseThrow();
+
+        member.changeNickName(memberModifyDTO.getNickname());
+        member.changeSocial(false);
+        member.changePw(passwordEncoder.encode(memberModifyDTO.getPw()));
+
+        memberRepository.save(member);
     }
 
     private Member makeSocialMember(String email){
