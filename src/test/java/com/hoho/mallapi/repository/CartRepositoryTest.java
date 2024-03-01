@@ -28,7 +28,7 @@ public class CartRepositoryTest {
     @Test
     public void testInsertByProduct(){
         String email = "user1@aaa.com";
-        Long pno = 37L;
+        Long pno = 70L;
         int qty = 3;
 
         //이메일 상품번호로 장바구니 아이템 확인 없으면 추가 있으면 수량 변경해서 저장

@@ -12,7 +12,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     //특정한 사용자의 모든 장바구니 아이템들을 가져오기 -> Input : email / out -> CartItemListDTO
     @Query("select " +
-            " new com.hoho.mallapi.dto.CartItemListDTO(ci.cino, ci.qty, p.pname, p.price, pi.fileName) " +
+            " new com.hoho.mallapi.dto.CartItemListDTO(ci.cino, ci.qty, p.pname, p.price, p.pno, pi.fileName) " +
             "from CartItem ci " +
             "inner join Cart mc on ci.cart = mc " +
             "left join Product p on ci.product = p " +
@@ -34,7 +34,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     //장바구니 아이템 번호로 장바구니 아이템들 조회
     @Query("select " +
-            " new com.hoho.mallapi.dto.CartItemListDTO(ci.cino, ci.qty, p.pname, p.price, pi.fileName) " +
+            " new com.hoho.mallapi.dto.CartItemListDTO(ci.cino, ci.qty, p.pname, p.price, p.pno, pi.fileName) " +
             "from CartItem ci " +
             "inner join Cart c on ci.cart = c " +
             "left join Product p on ci.product = p " +
